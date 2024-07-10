@@ -1,0 +1,26 @@
+version: '3'
+services:
+    web:
+        container_name: "pesquisa-web"
+        image: ambientum/php:8.1-nginx
+        ports:
+            - '8080:8080'
+        volumes:
+            - '.:/var/www/app'
+        links:
+            - database
+    database:
+        container_name: "pesquisa-database"
+        platform: linux/x86_64
+        image: postgres:13
+        ports:
+            - '5432:5432'
+        environment:
+            POSTGRES_DB: 'pesquisa'
+            POSTGRES_USER: 'postgres'
+            POSTGRES_PASSWORD: 'secret'
+        healthcheck:
+          test: ["CMD", "pg_isready", "-q", "-d", "pesquisa", "-U", "postgres"]
+          retries: 3
+          timeout: 5s
+
